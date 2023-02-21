@@ -13,3 +13,5 @@ mamba env export | head -n -1 > ./Team3-WebServer_falco_env.yml
 ```
 
 Note that the head command is used to remove the last line which contains prefix information unique to your local setup which may not be relevant for other users.
+
+Useful information on [parallelization](https://www.nextflow.io/docs/latest/faq.html?highlight=parallel#how-do-i-process-multiple-input-files-in-parallel).  
