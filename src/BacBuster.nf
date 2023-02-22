@@ -15,7 +15,7 @@ process pre_assembly_reads_qc {
     output:
     file "${raw_fastq.baseName}.txt" into raw_reads_qc
 
-    script:
+    shell:
     """
     falco --outdir ./ --threads 1 -subsample 1000 ${raw_fastq}
     """
