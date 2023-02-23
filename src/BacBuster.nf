@@ -10,17 +10,19 @@ raw_reads = Channel.fromPath(params.seq_reads)
 process pre_assembly_reads_qc {
     mamba "Team3-WebServer_falco_env.yml"
     input:
-    file raw_fastq from raw_reads
+    // https://www.nextflow.io/docs/edge/process.html#input-type-file
+    path raw_fastq from raw_reads
 
     output:
     file "${raw_fastq.baseName}.txt" into raw_reads_qc
 
+    // https://www.nextflow.io/docs/edge/process.html#shell
     shell:
-    """
-    falco --outdir ./ --threads 1 -subsample 1000 ${raw_fastq}
-    """
+    '''
+    falco --outdir ./ --threads 1 -subsample 1000 !{raw_fastq}
+    '''
 }
 
 workflow {
-    = pre_assembly_reads_qc(raw_reads)
+    pre_assembly_reads_qc(raw_reads)
 }
