@@ -5,21 +5,21 @@ nextflow.enable.dsl=2
 
 params.seq_reads = "/home/team3/raw_data/Raw_FQs/*"
 
-raw_reads = Channel.fromPath(params.seq_reads)
+raw_reads = Channel.fromPath(params.seq_reads, checkIfExists: true)
 
 process pre_assembly_reads_qc {
     conda "Team3-WebServer_falco_env.yml"
     input:
     // https://www.nextflow.io/docs/edge/process.html#input-type-file
-    path raw_fastq from raw_reads
+    path raw_fastq
 
     output:
-    file "${raw_fastq.baseName}.txt" into raw_reads_qc
+    file "${raw_fastq.baseName}.txt"
 
     // https://www.nextflow.io/docs/edge/process.html#shell
     shell:
     '''
-    falco --outdir ./ --threads 1 -subsample 1000 !{raw_fastq}
+    falco --outdir ./ --threads 1 -subsample 1000 -skip-data -skip-report !{raw_fastq}
     '''
 }
 
