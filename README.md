@@ -14,4 +14,9 @@ The goals of **BacBuster** are two-fold:
 
 The workflow of **BacBuster** is diagrammed below: 
 
+# Running BacBuster
+Once Nextflow has been installed on your system, BacBuster can be run using the command
 
+```
+nextflow run BacBuster.nf
+```
