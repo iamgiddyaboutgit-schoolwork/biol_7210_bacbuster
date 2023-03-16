@@ -22,7 +22,7 @@ process pre_assembly_reads_qc {
     shell:
     '''
     # Extract the isolate name.
-    raw_fastq_without_extensions = $(basename !{raw_fastq} | cut --delimiter=. --fields=1)
+    raw_fastq_without_extensions=$(basename !{raw_fastq} | cut --delimiter=. --fields=1)
 
     falco \
         --threads 1 \
