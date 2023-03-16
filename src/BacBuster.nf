@@ -21,14 +21,15 @@ process pre_assembly_reads_qc {
     // https://www.nextflow.io/docs/edge/process.html#shell
     shell:
     '''
-    # -summary-filename: The isolate name is extracted for naming purposes 
+    # Extract the isolate name.
+    raw_fastq_without_extensions = $(basename !{raw_fastq} | cut --delimiter=. --fields=1)
+
     falco \
-        --outdir ./ \
         --threads 1 \
         -subsample 1000 \
         -skip-data \
         -skip-report \
-        -summary-filename $(basename !{raw_fastq} | cut --delimiter=. --fields=1).falco_summary.txt \
+        -summary-filename ${raw_fastq_without_extensions}.falco_summary.txt \
         !{raw_fastq}
     '''
 }
