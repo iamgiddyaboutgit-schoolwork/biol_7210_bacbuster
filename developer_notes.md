@@ -15,3 +15,6 @@ mamba env export | head -n -1 > ./Team3-WebServer_falco_env.yml
 Note that the head command is used to remove the last line which contains prefix information unique to your local setup which may not be relevant for other users.
 
 Useful information on [parallelization](https://www.nextflow.io/docs/latest/faq.html?highlight=parallel#how-do-i-process-multiple-input-files-in-parallel).  
+
+# Nextflow Notes
+Upon invocation within a directory, nextflow creates a project specific .nextflow.log file, .nextflow cache directory as well as a work directory.  The output of the pipeline will be stored in the work directory.  
