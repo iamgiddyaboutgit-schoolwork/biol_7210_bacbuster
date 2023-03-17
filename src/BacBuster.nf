@@ -16,14 +16,11 @@ process pre_assembly_reads_qc {
     output:
     // The .baseName part here is used to get the file name 
     // without its extension e.g. /some/path/file.tar.gz -> file.tar
-    file "${raw_fastq.baseName}.falco_summary.txt"
+    file "summary.txt"
 
     // https://www.nextflow.io/docs/edge/process.html#shell
     shell:
     '''
-    # Extract the isolate name.
-    raw_fastq_without_extensions=$(basename !{raw_fastq} | cut --delimiter=. --fields=1)
-
     falco \
         --outdir ./ \
         --threads 1 \
