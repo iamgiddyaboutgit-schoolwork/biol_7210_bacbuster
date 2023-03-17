@@ -25,11 +25,11 @@ process pre_assembly_reads_qc {
     raw_fastq_without_extensions=$(basename !{raw_fastq} | cut --delimiter=. --fields=1)
 
     falco \
+        --outdir ./ \
         --threads 1 \
         -subsample 1000 \
         -skip-data \
         -skip-report \
-        -summary-filename ${raw_fastq_without_extensions}.falco_summary.txt \
         !{raw_fastq}
     '''
 }
