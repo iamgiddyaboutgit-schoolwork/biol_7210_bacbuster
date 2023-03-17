@@ -22,7 +22,7 @@ process pre_assembly_reads_qc {
     shell:
     '''
     falco \
-        --outdir ./ \
+        --outdir . \
         --threads 1 \
         -subsample 1000 \
         -skip-data \
