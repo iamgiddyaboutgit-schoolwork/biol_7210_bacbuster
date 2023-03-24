@@ -8,7 +8,7 @@ params.seq_reads = "/home/team3/raw_data/Raw_FQs/*"
 raw_reads = Channel.fromPath(params.seq_reads, checkIfExists: true)
 
 process pre_assembly_reads_qc {
-    conda "Team3-WebServer_falco_env.yml"
+    conda "Team3-WebServer_fastqc_env.yml"
     input:
     // https://www.nextflow.io/docs/edge/process.html#input-type-file
     path raw_fastq
