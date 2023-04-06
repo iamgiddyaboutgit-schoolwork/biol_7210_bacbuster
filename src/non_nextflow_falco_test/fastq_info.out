@@ -1,0 +1,5 @@
+fastq_utils 0.25.1
+DEFAULT_HASHSIZE=39000001
+Scanning and indexing all reads from test_fastq.fq
+
+ERROR: Error in file test_fastq.fq: line 12: duplicated sequence SEQ_ID 1
