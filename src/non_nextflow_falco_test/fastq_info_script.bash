@@ -77,7 +77,7 @@ num_lines_in_file=$(wc -l ${fastq_to_check} | cut -f 1 -d " ")
 #     tail -n +${line_after_problem_again} polished.fq >> "polished.fq"
 # done
 
-# A loop can be used to get a running sums of the elements of 
+# A loop can be used to get a running sum of the elements of 
 # last_lines_in_problem_reads.  From this, we can infer
 # the line numbers in the original file.
 # Declare an array.
@@ -86,11 +86,20 @@ declare -a last_lines_in_problem_reads_reformatted
 declare -a last_lines_in_problem_reads
 
 last_lines_in_problem_reads=(4 8 8 4 64 12 4 4)
-i=0
-for line_num in ${last_lines_in_problem_reads[@]}; do
-    last_lines_in_problem_reads_reformatted[$((${i}+1))]=$((${last_lines_in_problem_reads_reformatted[i]}+${line_num}))
-    i=$((${i}+1))
+num_last_lines_in_problem_reads=${#last_lines_in_problem_reads[@]}
+
+if  [[ -n "${last_lines_in_problem_reads[0]}" ]]; then
+    last_lines_in_problem_reads_reformatted[0]=${last_lines_in_problem_reads[0]}
+fi
+
+j=1
+for (( i=1 ; i<${num_last_lines_in_problem_reads} ; i++ )); do
+    last_lines_in_problem_reads_reformatted[${j}]=$((${last_lines_in_problem_reads_reformatted[$((${j} - 1))]} + ${last_lines_in_problem_reads[i]}))
+    j=$((${j}+1))
 done
-echo ${last_lines_in_problem_reads_reformatted[@]}
+
+
+
+
 
 
