@@ -16,5 +16,23 @@ Note that the head command is used to remove the last line which contains prefix
 
 Useful information on [parallelization](https://www.nextflow.io/docs/latest/faq.html?highlight=parallel#how-do-i-process-multiple-input-files-in-parallel).  
 
+# Installing Java using [SDKMAN!](https://sdkman.io/install)
+This will install sdkman to a hidden file in the ```${HOME}``` directory.
+```
+curl -s "https://get.sdkman.io" | bash
+```
+and then 
+```
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+```
+Verify installation with
+```
+sdk version
+```
+Finally, install Amazon Corretto (a distribution of the Open Java Development Kit).
+```
+sdk install java 17.0.6-amzn
+```
+
 # Nextflow Notes
 Upon invocation within a directory, nextflow creates a project specific .nextflow.log file, .nextflow cache directory as well as a work directory.  The output of the pipeline will be stored in the work directory.  
