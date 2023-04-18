@@ -98,7 +98,11 @@ for (( i=1 ; i<${num_last_lines_in_problem_reads} ; i++ )); do
     j=$((${j}+1))
 done
 
+for line_num in ${last_lines_in_problem_reads_reformatted[@]}; do
+    starting_line_num_to_delete=$((${line_num} - 3))
 
+    sed "${starting_line_num_to_delete},${line_num}d" ${fastq_to_check} > polished.fq
+done
 
 
 
