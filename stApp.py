@@ -19,7 +19,7 @@ with st.form("func"):
     email = st.text_input("Provide email for to receive results later.")
 
     #Submit button for the form.
-    submitted = st.form_submit_button
+    submitted = st.form_submit_button()
     if submitted:
         st.write("Inputs provided. Please wait for results!")
 
