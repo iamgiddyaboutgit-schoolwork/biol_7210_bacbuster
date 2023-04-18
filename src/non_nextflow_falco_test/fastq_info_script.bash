@@ -92,7 +92,7 @@ declare -a last_lines_in_problem_reads_reformatted
 # TODO: delete
 declare -a last_lines_in_problem_reads
 
-last_lines_in_problem_reads=(4 8 8 4 64 12 4 4)
+last_lines_in_problem_reads=(4 8)
 num_last_lines_in_problem_reads=${#last_lines_in_problem_reads[@]}
 
 if  [[ -n "${last_lines_in_problem_reads[0]}" ]]; then
@@ -130,7 +130,11 @@ for line_num in ${last_lines_in_problem_reads_reformatted[@]}; do
     index_for_all_lines_to_delete=$((${index_for_all_lines_to_delete} + 4))
     # echo ${index_for_all_lines_to_delete}
 done
-echo "${all_lines_to_delete[@]}"
-
-
+# echo "${all_lines_to_delete[@]}d;"
+# https://stackoverflow.com/a/48744059/8423001
+echo ${all_lines_to_delete[@]} | sed "s/\ /d;/g" > ../../testing_data/sequencing_reads/all_lines_to_delete
+    # | xargs -I z sed "s/z" ${fastq_to_check} > ../../testing_data/sequencing_reads/polished.fq
+# > ../../testing_data/sequencing_reads/all_lines_to_delete
+# https://stackoverflow.com/a/26727351/8423001
+# sed <(sed 's/$/d/' temp_lines_to_del) polished.fq
 
