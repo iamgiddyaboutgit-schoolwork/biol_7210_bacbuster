@@ -92,7 +92,7 @@ declare -a last_lines_in_problem_reads_reformatted
 # TODO: delete
 declare -a last_lines_in_problem_reads
 
-last_lines_in_problem_reads=(4 8)
+last_lines_in_problem_reads=(4 8 16 24) # TODO:for testing only
 num_last_lines_in_problem_reads=${#last_lines_in_problem_reads[@]}
 
 if  [[ -n "${last_lines_in_problem_reads[0]}" ]]; then
@@ -132,9 +132,12 @@ for line_num in ${last_lines_in_problem_reads_reformatted[@]}; do
 done
 # echo "${all_lines_to_delete[@]}d;"
 # https://stackoverflow.com/a/48744059/8423001
-echo ${all_lines_to_delete[@]} | sed "s/\ /d;/g" > ../../testing_data/sequencing_reads/all_lines_to_delete
-    # | xargs -I z sed "s/z" ${fastq_to_check} > ../../testing_data/sequencing_reads/polished.fq
-# > ../../testing_data/sequencing_reads/all_lines_to_delete
+# https://stackoverflow.com/a/26569006/8423001
+# https://stackoverflow.com/a/15978536/8423001
 # https://stackoverflow.com/a/26727351/8423001
-# sed <(sed 's/$/d/' temp_lines_to_del) polished.fq
+# The first sed command replaces spaces and the first newline with "d;".
+# It is used to format the 2nd sed command which does the actual deleting.
+echo ${all_lines_to_delete[@]} | sed "s/\ /d;/g;s/$/d;/" \
+    | xargs -I z sed z ${fastq_to_check} > ../../testing_data/sequencing_reads/polished.fq
+
 
