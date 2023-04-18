@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 fastq_to_check="../../testing_data/sequencing_reads/test_fastq_3.fq"
 num_lines_in_file=$(wc -l ${fastq_to_check} | cut -f 1 -d " ")
 
@@ -80,6 +80,13 @@ num_lines_in_file=$(wc -l ${fastq_to_check} | cut -f 1 -d " ")
 # A loop can be used to get a running sum of the elements of 
 # last_lines_in_problem_reads.  From this, we can infer
 # the line numbers in the original file.
+# The idea is that if we want to do all of our deleting of lines
+# in the file in memory, then we need to know the actual line
+# numbers that need to be deleted ahead of time.  
+# We can easily get an array of line numbers using fastq_info
+# that are based on lines since the last recursive call.
+# To change this array to absolute line numbers, we just
+# need to perform some simple arithmetic.
 # Declare an array.
 declare -a last_lines_in_problem_reads_reformatted 
 # TODO: delete
@@ -89,21 +96,41 @@ last_lines_in_problem_reads=(4 8 8 4 64 12 4 4)
 num_last_lines_in_problem_reads=${#last_lines_in_problem_reads[@]}
 
 if  [[ -n "${last_lines_in_problem_reads[0]}" ]]; then
+    # last_lines_in_problem_reads[0] is of non-zero length
     last_lines_in_problem_reads_reformatted[0]=${last_lines_in_problem_reads[0]}
 fi
 
 j=1
+# After this loop, last_lines_in_problem_reads_reformatted will hold
+# line numbers positioned within the original file.
 for (( i=1 ; i<${num_last_lines_in_problem_reads} ; i++ )); do
     last_lines_in_problem_reads_reformatted[${j}]=$((${last_lines_in_problem_reads_reformatted[$((${j} - 1))]} + ${last_lines_in_problem_reads[i]}))
     j=$((${j}+1))
+    
 done
 
+declare -a all_lines_to_delete
+index_for_all_lines_to_delete=0
 for line_num in ${last_lines_in_problem_reads_reformatted[@]}; do
-    starting_line_num_to_delete=$((${line_num} - 3))
+    first_line_to_delete_in_seq=$((${line_num} - 3))
+    second_line_to_delete_in_seq=$((${line_num} - 2))
+    third_line_to_delete_in_seq=$((${line_num} - 1))
+    fourth_line_to_delete_in_seq=${line_num}
 
-    sed "${starting_line_num_to_delete},${line_num}d" ${fastq_to_check} > polished.fq
+    all_lines_to_delete[${index_for_all_lines_to_delete}]=${first_line_to_delete_in_seq}
+    all_lines_to_delete[$((${index_for_all_lines_to_delete} + 1))]=${second_line_to_delete_in_seq}
+    all_lines_to_delete[$((${index_for_all_lines_to_delete} + 2))]=${third_line_to_delete_in_seq}
+    all_lines_to_delete[$((${index_for_all_lines_to_delete} + 3))]=${fourth_line_to_delete_in_seq}
+    
+
+    
+    # sed "${starting_line_num_to_delete},${line_num}d" ${fastq_to_check} > polished.fq
+
+    # Prepare for next iteration
+    index_for_all_lines_to_delete=$((${index_for_all_lines_to_delete} + 4))
+    # echo ${index_for_all_lines_to_delete}
 done
-
+echo "${all_lines_to_delete[@]}"
 
 
 
