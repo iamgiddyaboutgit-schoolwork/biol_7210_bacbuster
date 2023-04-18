@@ -3,29 +3,7 @@ fastq_to_check="../../testing_data/sequencing_reads/test_fastq_3.fq"
 num_lines_in_file=$(wc -l ${fastq_to_check} | cut -f 1 -d " ")
 
 #####################################################################
-# Check for any problems.
-# problem_counter=0
-# last_lines_in_problem_reads[${problem_counter}]=$(fastq_info ${fastq_to_check} 2>&1 > /dev/null \
-#     | grep -P --max-count=1 --only-matching "(?<=line\s)[0-9]+(?=:\s((duplicated\sseq)|(sequence\sand\squality)))" -)
-# echo ${last_lines_in_problem_reads}
-# Iteratively check for additional problems if there was a 
-# previous problem.
-
-
-# while (( "${line_after_problem}" < "${num_lines_in_file}" ))
-# do
-#     last_lines_in_problem_reads[${problem_counter}]=$(tail -n +${line_after_problem} ${fastq_to_check} \
-#         | fastq_info - 2>&1 > /dev/null \
-#         | grep -P --max-count=1 --only-matching "(?<=line\s)[0-9]+(?=:\s((duplicated\sseq)|(sequence\sand\squality)))" -)
-
-#     line_after_problem=$((${last_lines_in_problem_reads[${problem_counter}]}+1))
-
-#     ((problem_counter+=1))
-#     ##### loop check ####
-#     echo "line_after_problem: ${line_after_problem}"
-#     echo "num_lines_in_file: ${num_lines_in_file}"
-# done
-
+# Check for specific file format problems.
 # Note that fastq_info will terminate upon finding the first error.
 # Using the trick here,
 # https://stackoverflow.com/a/2342841/8423001
@@ -34,7 +12,25 @@ num_lines_in_file=$(wc -l ${fastq_to_check} | cut -f 1 -d " ")
 # last_lines_in_problem_reads gives the last line in the 4-line sequence with the problem.
 # Problems that we use a regex to find are "duplicated sequence" and "sequence and 
 # quality score lengths don't match".
-# We need to delete all 4 lines with the problem in the .fq file.
+# Setup before loop:
+problem_counter=0
+last_lines_in_problem_reads[${problem_counter}]=$(fastq_info ${fastq_to_check} 2>&1 > /dev/null \
+    | grep -P --max-count=1 --only-matching "(?<=line\s)[0-9]+(?=:\s((duplicated\sseq)|(sequence\sand\squality)))" -)
+
+# Iteratively check for additional problems if there was a 
+# previous problem.
+while (( "${line_after_problem}" < "${num_lines_in_file}" ))
+do
+    last_lines_in_problem_reads[${problem_counter}]=$(tail -n +${line_after_problem} ${fastq_to_check} \
+        | fastq_info - 2>&1 > /dev/null \
+        | grep -P --max-count=1 --only-matching "(?<=line\s)[0-9]+(?=:\s((duplicated\sseq)|(sequence\sand\squality)))" -)
+
+    line_after_problem=$((${last_lines_in_problem_reads[${problem_counter}]} + 1))
+
+    ((problem_counter+=1))
+done
+
+# We assume that we want to delete all 4 lines with the problem in the .fastq file.
 # The [0] allows us to assign to a slot in an array.
 # https://www.gnu.org/software/bash/manual/html_node/Arrays.html
 # last_lines_in_problem_reads[0]=$(fastq_info ${fastq_to_check} 2>&1 > /dev/null \
@@ -121,16 +117,11 @@ for line_num in ${last_lines_in_problem_reads_reformatted[@]}; do
     all_lines_to_delete[$((${index_for_all_lines_to_delete} + 1))]=${second_line_to_delete_in_seq}
     all_lines_to_delete[$((${index_for_all_lines_to_delete} + 2))]=${third_line_to_delete_in_seq}
     all_lines_to_delete[$((${index_for_all_lines_to_delete} + 3))]=${fourth_line_to_delete_in_seq}
-    
-
-    
-    # sed "${starting_line_num_to_delete},${line_num}d" ${fastq_to_check} > polished.fq
 
     # Prepare for next iteration
     index_for_all_lines_to_delete=$((${index_for_all_lines_to_delete} + 4))
-    # echo ${index_for_all_lines_to_delete}
 done
-# echo "${all_lines_to_delete[@]}d;"
+
 # https://stackoverflow.com/a/48744059/8423001
 # https://stackoverflow.com/a/26569006/8423001
 # https://stackoverflow.com/a/15978536/8423001
