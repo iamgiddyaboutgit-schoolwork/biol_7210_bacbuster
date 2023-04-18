@@ -1,10 +1,10 @@
 import streamlit as st
 
 #Provide a large title in bold.
-st.text("BacBuster Isolate Analyzer")
+st.text("#BacBuster Isolate Analyzer")
 
 #Provide some info on how the app works and the authors.
-
+st.text("##This app seeks to simplify the process of ")
 
 #Create form so that uploads and email are all processed together.
 with st.form("func"):
