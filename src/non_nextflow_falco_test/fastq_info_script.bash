@@ -1,5 +1,30 @@
 #!/usr/bin/env bash
-fastq_to_check="../../testing_data/sequencing_reads/test_fastq_3.fq"
+
+# Given a FASTQ file, remove any duplicated sequences and sequences
+# where quality score lengths don't match.  In the current implementation,
+# assume that each read has 4 lines devoted to it in the file.
+
+# Parse user provided options and their arguments.
+# https://gist.github.com/c-garcia/95e488e974f207f3afa95fca2fdf683b
+# https://www.redhat.com/sysadmin/arguments-options-bash-scripts
+while getopts ":f:o:" opt; do
+case $opt in
+    f) fastq_to_check=$OPTARG;;
+    o) polished_fastq=$OPTARG;;
+    \?) # Invalid option
+        echo "Error: Invalid option"
+        exit;;
+esac
+done
+
+# # File checks
+# # Check that fastq_to_check exists.
+# if ! [ -f "${fastq_to_check}" ]
+# then
+#     printf "${fastq_to_check} cannot be found.\n"
+#     exit 1
+# fi
+
 num_lines_in_file=$(wc -l ${fastq_to_check} | cut -f 1 -d " ")
 # num_reads_in_file=$((${num_lines_in_file} / 4))
 
@@ -104,5 +129,7 @@ done
 # https://stackoverflow.com/a/26727351/8423001
 # The first sed command replaces spaces and the first newline with "d;".
 # It is used to format the 2nd sed command which does the actual deleting.
-echo ${all_lines_to_delete[@]} | sed "s/\ /d;/g;s/$/d;/" \
-    | xargs -I z sed z ${fastq_to_check} > ../../testing_data/sequencing_reads/polished.fq
+# echo ${all_lines_to_delete[@]} | sed "s/\ /d;/g;s/$/d;/" \
+#     | xargs -I z sed z ${fastq_to_check} > "${polished_fastq}"
+# test
+# echo ${all_lines_to_delete[@]} > /home/jpatterson87/big_project/Team3-WebServer/testing_data/sequencing_reads/all_lines_to_delete
