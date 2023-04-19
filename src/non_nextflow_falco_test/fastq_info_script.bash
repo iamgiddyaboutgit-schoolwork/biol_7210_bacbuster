@@ -70,21 +70,27 @@ fi
 ###########################################################################
 # Iteratively check for additional problems if there was a 
 # previous problem.
+echo "before while"
+echo "last_lines_in_problem_reads: ${last_lines_in_problem_reads[@]}"
+echo "line_after_problem: ${line_after_problem}"
+echo "num_lines_in_file: ${num_lines_in_file}"
 line_num_to_stop=$(("${num_lines_in_file}" - 3))
 while (( "${line_after_problem}" < "${line_num_to_stop}" ))
 do
+    echo "in while"
     echo "num lines in polished_fastq.tmp: $(wc -l ${polished_fastq}.tmp)"
     # broken pipe problems: https://superuser.com/a/642932/1774660
     last_line_with_new_problem=$(fastq_info ${polished_fastq}.tmp 2>&1 > /dev/null \
         | grep -P --max-count=1 --only-matching "(?<=line\s)[0-9]+(?=:\s((duplicated\sseq)|(sequence\sand\squality)))" -)
     
     
-    echo "last_lines_in_problem_reads[${problem_counter}]: ${last_lines_in_problem_reads[${problem_counter}]}"
+
     if  [[ -n "${last_line_with_new_problem}" ]]
     then 
-        # echo "We think we found another problem."
+        echo "in if within while"
         # We found another problem.
         last_lines_in_problem_reads[${problem_counter}]=${last_line_with_new_problem}
+        echo "last_lines_in_problem_reads[${problem_counter}]: ${last_lines_in_problem_reads[${problem_counter}]}"
         line_after_problem=$((${line_after_problem} + ${last_lines_in_problem_reads["${problem_counter}"]}))
         # https://unix.stackexchange.com/a/409896
         tail -n +${line_after_problem} ${polished_fastq}.tmp > ${polished_fastq}.pre_tmp && mv ${polished_fastq}.pre_tmp ${polished_fastq}.tmp
@@ -121,6 +127,7 @@ num_last_lines_in_problem_reads=${#last_lines_in_problem_reads[@]}
 
 if  [[ -n "${last_lines_in_problem_reads[0]}" ]]; then
     # last_lines_in_problem_reads[0] is of non-zero length
+    echo "in if for delete section"
     last_lines_in_problem_reads_reformatted[0]=${last_lines_in_problem_reads[0]}
 fi
 
@@ -139,6 +146,8 @@ done
 declare -a all_lines_to_delete
 index_for_all_lines_to_delete=0
 for line_num in ${last_lines_in_problem_reads_reformatted[@]}; do
+    echo "in 2nd for loop"
+    echo "last_lines_in_problem_reads_reformatted[@]: ${last_lines_in_problem_reads_reformatted[@]}"
     first_line_to_delete_in_seq=$((${line_num} - 3))
     second_line_to_delete_in_seq=$((${line_num} - 2))
     third_line_to_delete_in_seq=$((${line_num} - 1))
@@ -159,8 +168,12 @@ done
 # https://stackoverflow.com/a/26727351/8423001
 # The first sed command replaces spaces and the first newline with "d;".
 # It is used to format the 2nd sed command which does the actual deleting.
+echo "all_lines_to_delete[@]: ${all_lines_to_delete[@]}"
+echo "script to sed delete command: $(echo ${all_lines_to_delete[@]} | sed "s/\ /d;/g;s/$/d;/")"
+
 echo ${all_lines_to_delete[@]} | sed "s/\ /d;/g;s/$/d;/" \
     | xargs -I % sed % ${fastq_to_check} > "${polished_fastq}"
 
+echo "num lines in polished_fastq after delete op: $(wc -l ${polished_fastq})"
 # Get final information on polished_fastq
 fastq_info ${polished_fastq} 
