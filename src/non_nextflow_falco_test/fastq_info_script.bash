@@ -50,62 +50,59 @@ do
     
 done
 
-echo ${last_lines_in_problem_reads[@]}
-# # We assume that we want to delete all 4 lines with the problem in the .fastq file.
+# We assume that we want to delete all 4 lines with the problem in the .fastq file.
 
-# # A loop can be used to get a running sum of the elements of 
-# # last_lines_in_problem_reads.  From this, we can infer
-# # the line numbers in the original file.
-# # The idea is that if we want to do all of our deleting of lines
-# # in the file in memory, then we need to know the actual line
-# # numbers that need to be deleted ahead of time.  
-# # We can easily get an array of line numbers using fastq_info
-# # that are based on lines since the last recursive call.
-# # To change this array to absolute line numbers, we just
-# # need to perform some simple arithmetic.
-# # Declare an array.
-# declare -a last_lines_in_problem_reads_reformatted 
+# A loop can be used to get a running sum of the elements of 
+# last_lines_in_problem_reads.  From this, we can infer
+# the line numbers in the original file.
+# The idea is that if we want to do all of our deleting of lines
+# in the file in memory, then we need to know the actual line
+# numbers that need to be deleted ahead of time.  
+# We can easily get an array of line numbers using fastq_info
+# that are based on lines since the last recursive call.
+# To change this array to absolute line numbers, we just
+# need to perform some simple arithmetic.
+# Declare an array.
+declare -a last_lines_in_problem_reads_reformatted 
 
-# num_last_lines_in_problem_reads=${#last_lines_in_problem_reads[@]}
+num_last_lines_in_problem_reads=${#last_lines_in_problem_reads[@]}
 
-# if  [[ -n "${last_lines_in_problem_reads[0]}" ]]; then
-#     # last_lines_in_problem_reads[0] is of non-zero length
-#     last_lines_in_problem_reads_reformatted[0]=${last_lines_in_problem_reads[0]}
-# fi
+if  [[ -n "${last_lines_in_problem_reads[0]}" ]]; then
+    # last_lines_in_problem_reads[0] is of non-zero length
+    last_lines_in_problem_reads_reformatted[0]=${last_lines_in_problem_reads[0]}
+fi
 
-# j=1
-# # After this loop, last_lines_in_problem_reads_reformatted will hold
-# # line numbers positioned within the original file.
-# for (( i=1 ; i<${num_last_lines_in_problem_reads} ; i++ )); do
-#     last_lines_in_problem_reads_reformatted[${j}]=$((${last_lines_in_problem_reads_reformatted[$((${j} - 1))]} + ${last_lines_in_problem_reads[i]}))
-#     j=$((${j}+1))
+j=1
+# After this loop, last_lines_in_problem_reads_reformatted will hold
+# line numbers positioned within the original file.
+for (( i=1 ; i<${num_last_lines_in_problem_reads} ; i++ )); do
+    last_lines_in_problem_reads_reformatted[${j}]=$((${last_lines_in_problem_reads_reformatted[$((${j} - 1))]} + ${last_lines_in_problem_reads[i]}))
+    j=$((${j}+1))
     
-# done
+done
 
-# declare -a all_lines_to_delete
-# index_for_all_lines_to_delete=0
-# for line_num in ${last_lines_in_problem_reads_reformatted[@]}; do
-#     first_line_to_delete_in_seq=$((${line_num} - 3))
-#     second_line_to_delete_in_seq=$((${line_num} - 2))
-#     third_line_to_delete_in_seq=$((${line_num} - 1))
-#     fourth_line_to_delete_in_seq=${line_num}
+declare -a all_lines_to_delete
+index_for_all_lines_to_delete=0
+for line_num in ${last_lines_in_problem_reads_reformatted[@]}; do
+    first_line_to_delete_in_seq=$((${line_num} - 3))
+    second_line_to_delete_in_seq=$((${line_num} - 2))
+    third_line_to_delete_in_seq=$((${line_num} - 1))
+    fourth_line_to_delete_in_seq=${line_num}
 
-#     all_lines_to_delete[${index_for_all_lines_to_delete}]=${first_line_to_delete_in_seq}
-#     all_lines_to_delete[$((${index_for_all_lines_to_delete} + 1))]=${second_line_to_delete_in_seq}
-#     all_lines_to_delete[$((${index_for_all_lines_to_delete} + 2))]=${third_line_to_delete_in_seq}
-#     all_lines_to_delete[$((${index_for_all_lines_to_delete} + 3))]=${fourth_line_to_delete_in_seq}
+    all_lines_to_delete[${index_for_all_lines_to_delete}]=${first_line_to_delete_in_seq}
+    all_lines_to_delete[$((${index_for_all_lines_to_delete} + 1))]=${second_line_to_delete_in_seq}
+    all_lines_to_delete[$((${index_for_all_lines_to_delete} + 2))]=${third_line_to_delete_in_seq}
+    all_lines_to_delete[$((${index_for_all_lines_to_delete} + 3))]=${fourth_line_to_delete_in_seq}
 
-#     # Prepare for next iteration
-#     index_for_all_lines_to_delete=$((${index_for_all_lines_to_delete} + 4))
-# done
+    # Prepare for next iteration
+    index_for_all_lines_to_delete=$((${index_for_all_lines_to_delete} + 4))
+done
 
-# # https://stackoverflow.com/a/48744059/8423001
-# # https://stackoverflow.com/a/26569006/8423001
-# # https://stackoverflow.com/a/15978536/8423001
-# # https://stackoverflow.com/a/26727351/8423001
-# # The first sed command replaces spaces and the first newline with "d;".
-# # It is used to format the 2nd sed command which does the actual deleting.
-# echo ${all_lines_to_delete[@]} | sed "s/\ /d;/g;s/$/d;/" \
-#     | xargs -I z sed z ${fastq_to_check} > ../../testing_data/sequencing_reads/polished.fq
-
-
+# https://stackoverflow.com/a/48744059/8423001
+# https://stackoverflow.com/a/26569006/8423001
+# https://stackoverflow.com/a/15978536/8423001
+# https://stackoverflow.com/a/26727351/8423001
+# The first sed command replaces spaces and the first newline with "d;".
+# It is used to format the 2nd sed command which does the actual deleting.
+echo ${all_lines_to_delete[@]} | sed "s/\ /d;/g;s/$/d;/" \
+    | xargs -I z sed z ${fastq_to_check} > ../../testing_data/sequencing_reads/polished.fq
