@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-
+# https://gist.github.com/mohanpedala/1e2ff5661761d3abd0385e8223e16425
+set -o pipefail
 # Given a FASTQ file, remove any duplicated sequences and sequences
 # where quality score lengths don't match.  In the current implementation,
 # assume that each read has 4 lines devoted to it in the file.
@@ -7,9 +8,9 @@
 # Parse user provided options and their arguments.
 # https://gist.github.com/c-garcia/95e488e974f207f3afa95fca2fdf683b
 # https://www.redhat.com/sysadmin/arguments-options-bash-scripts
-while getopts ":f:o:" opt; do
+while getopts ":i:o:" opt; do
 case $opt in
-    f) fastq_to_check=$OPTARG;;
+    i) fastq_to_check=$OPTARG;;
     o) polished_fastq=$OPTARG;;
     \?) # Invalid option
         echo "Error: Invalid option"
@@ -49,24 +50,31 @@ then
     # last_lines_in_problem_reads[0] is of non-zero length, i.e.
     # we found a problem.
     line_after_problem=$((${last_lines_in_problem_reads[${problem_counter}]} + 1))
+    # Make a temp file that is shorter that can be checked for additional problems.
+    tail -n +${line_after_problem} ${fastq_to_check} > ${polished_fastq}.tmp
     ((problem_counter+=1))
 else
     # Stop script; there were no problems.
     exit 0
 fi
 
-# Iteratively check for additional problems if there was  
-# a previous problem.
+###########################################################################
+# looping and finding
+###########################################################################
+# Iteratively check for additional problems if there was a 
+# previous problem.
 while (( "${line_after_problem}" < (("${num_lines_in_file}" - 3)) ))
 do
-    last_lines_in_problem_reads[${problem_counter}]=$(tail -n +${line_after_problem} ${fastq_to_check} \
-        | fastq_info - 2>&1 > /dev/null \
+    # broken pipe problems: https://superuser.com/a/642932/1774660
+    last_lines_in_problem_reads[${problem_counter}]=$(fastq_info ${polished_fastq}.tmp 2>&1 > /dev/null \
         | grep -P --max-count=1 --only-matching "(?<=line\s)[0-9]+(?=:\s((duplicated\sseq)|(sequence\sand\squality)))" -)
-    
+
     if  [[ -n "${last_lines_in_problem_reads[${problem_counter}]}" ]]
     then 
         # We found another problem.
         line_after_problem=$((${line_after_problem} + ${last_lines_in_problem_reads["${problem_counter}"]}))
+        # https://unix.stackexchange.com/a/409896
+        tail -n +${line_after_problem} ${polished_fastq}.tmp > ${polished_fastq}.pre_tmp && mv ${polished_fastq}.pre_tmp ${polished_fastq}.tmp
         ((problem_counter+=1))
     else
         # Stop script; there were no further problems (of the kind we are looking for)
@@ -74,6 +82,10 @@ do
     fi
     
 done
+
+###########################################################################
+# deleting 
+###########################################################################
 
 # We assume that we want to delete all 4 lines with the problem in the .fastq file.
 
