@@ -55,11 +55,11 @@ else
     exit 0
 fi
 
-# Iteratively check for additional problems if there was a 
-# previous problem.
+# Iteratively check for additional problems if there was  
+# a previous problem.
 while (( "${line_after_problem}" < (("${num_lines_in_file}" - 3)) ))
 do
-    last_lines_in_problem_reads[${problem_counter}]=$(tail -n +${line_after_problem} ${fastq_to_check} 2>&1 > /dev/null \
+    last_lines_in_problem_reads[${problem_counter}]=$(tail -n +${line_after_problem} ${fastq_to_check} \
         | fastq_info - 2>&1 > /dev/null \
         | grep -P --max-count=1 --only-matching "(?<=line\s)[0-9]+(?=:\s((duplicated\sseq)|(sequence\sand\squality)))" -)
     
