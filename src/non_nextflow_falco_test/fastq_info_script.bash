@@ -42,19 +42,26 @@ num_lines_in_file=$(wc -l ${fastq_to_check} | cut -f 1 -d " ")
 # Setup before loop:
 problem_counter=0
 
-last_lines_in_problem_reads[${problem_counter}]=$(fastq_info ${fastq_to_check} 2>&1 > /dev/null \
+last_line_with_new_problem=$(fastq_info ${fastq_to_check} 2>&1 > /dev/null \
     | grep -P --max-count=1 --only-matching "(?<=line\s)[0-9]+(?=:\s((duplicated\sseq)|(sequence\sand\squality)))" -)
 
-if  [[ -n "${last_lines_in_problem_reads[0]}" ]]
+if  [[ -n "${last_line_with_new_problem}" ]]
 then
-    # last_lines_in_problem_reads[0] is of non-zero length, i.e.
-    # we found a problem.
+   
+    # last_line_with_new_problem is of non-zero length, i.e.
+    # we found a problem for a read.  Save the line number.
+    last_lines_in_problem_reads[${problem_counter}]=${last_line_with_new_problem}
+
     line_after_problem=$((${last_lines_in_problem_reads[${problem_counter}]} + 1))
-    # Make a temp file that is shorter that can be checked for additional problems.
+
+    # Make a temp file containing the rest of the file
+    # that can be checked for additional problems.
     tail -n +${line_after_problem} ${fastq_to_check} > ${polished_fastq}.tmp
     ((problem_counter+=1))
 else
     # Stop script; there were no problems.
+    rm ${polished_fastq}
+    cp ${fastq_to_check} ${polished_fastq}
     exit 0
 fi
 
@@ -63,25 +70,33 @@ fi
 ###########################################################################
 # Iteratively check for additional problems if there was a 
 # previous problem.
-while (( "${line_after_problem}" < (("${num_lines_in_file}" - 3)) ))
+line_num_to_stop=$(("${num_lines_in_file}" - 3))
+while (( "${line_after_problem}" < "${line_num_to_stop}" ))
 do
+    echo "num lines in polished_fastq.tmp: $(wc -l ${polished_fastq}.tmp)"
     # broken pipe problems: https://superuser.com/a/642932/1774660
-    last_lines_in_problem_reads[${problem_counter}]=$(fastq_info ${polished_fastq}.tmp 2>&1 > /dev/null \
+    last_line_with_new_problem=$(fastq_info ${polished_fastq}.tmp 2>&1 > /dev/null \
         | grep -P --max-count=1 --only-matching "(?<=line\s)[0-9]+(?=:\s((duplicated\sseq)|(sequence\sand\squality)))" -)
-
-    if  [[ -n "${last_lines_in_problem_reads[${problem_counter}]}" ]]
+    
+    
+    echo "last_lines_in_problem_reads[${problem_counter}]: ${last_lines_in_problem_reads[${problem_counter}]}"
+    if  [[ -n "${last_line_with_new_problem}" ]]
     then 
+        # echo "We think we found another problem."
         # We found another problem.
+        last_lines_in_problem_reads[${problem_counter}]=${last_line_with_new_problem}
         line_after_problem=$((${line_after_problem} + ${last_lines_in_problem_reads["${problem_counter}"]}))
         # https://unix.stackexchange.com/a/409896
         tail -n +${line_after_problem} ${polished_fastq}.tmp > ${polished_fastq}.pre_tmp && mv ${polished_fastq}.pre_tmp ${polished_fastq}.tmp
         ((problem_counter+=1))
     else
-        # Stop script; there were no further problems (of the kind we are looking for)
-        exit 0
+        # Break loop; there were no further problems (of the kind we are looking for)
+        break
     fi
-    
 done
+
+# post-loop clean-up
+rm ${polished_fastq}.tmp
 
 ###########################################################################
 # deleting 
@@ -113,8 +128,11 @@ j=1
 # After this loop, last_lines_in_problem_reads_reformatted will hold
 # line numbers positioned within the original file.
 for (( i=1 ; i<${num_last_lines_in_problem_reads} ; i++ )); do
-    last_lines_in_problem_reads_reformatted[${j}]=$((${last_lines_in_problem_reads_reformatted[$((${j} - 1))]} + ${last_lines_in_problem_reads[i]}))
-    j=$((${j}+1))
+    echo "num_last_lines_in_problem_reads: ${num_last_lines_in_problem_reads}"
+    echo "${last_lines_in_problem_reads_reformatted[$((${j} - 1))]}"
+    echo "${last_lines_in_problem_reads[@]}"
+    ${last_lines_in_problem_reads_reformatted[${j}]}=$(( ${last_lines_in_problem_reads_reformatted[$((${j} - 1))]} + ${last_lines_in_problem_reads[${i}]} ))
+    j=$((${j} + 1))
     
 done
 
@@ -143,3 +161,6 @@ done
 # It is used to format the 2nd sed command which does the actual deleting.
 echo ${all_lines_to_delete[@]} | sed "s/\ /d;/g;s/$/d;/" \
     | xargs -I % sed % ${fastq_to_check} > "${polished_fastq}"
+
+# Get final information on polished_fastq
+fastq_info ${polished_fastq} 
