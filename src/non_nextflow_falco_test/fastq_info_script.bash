@@ -30,24 +30,18 @@ else
     exit 0
 fi
 
-echo ${line_after_problem}
 # Iteratively check for additional problems if there was a 
 # previous problem.
 while (( "${line_after_problem}" < "${num_lines_in_file}" ))
 do
-    echo "line_after_problem: ${line_after_problem}"
-    echo "num_lines_in_file: ${num_lines_in_file}"
     last_lines_in_problem_reads[${problem_counter}]=$(tail -n +${line_after_problem} ${fastq_to_check} \
         | fastq_info - 2>&1 > /dev/null \
         | grep -P --max-count=1 --only-matching "(?<=line\s)[0-9]+(?=:\s((duplicated\sseq)|(sequence\sand\squality)))" -)
     
-    echo "array: ${last_lines_in_problem_reads[@]}"
     if  [[ -n "${last_lines_in_problem_reads[${problem_counter}]}" ]]
     then 
-        echo "We found another problem."
         # We found another problem.
-        line_after_problem=$((${last_lines_in_problem_reads[((${problem_counter} - 1))]} + ${last_lines_in_problem_reads[${problem_counter}]} + 1))
-        echo ${line_after_problem}
+        line_after_problem=$((${line_after_problem} + ${last_lines_in_problem_reads["${problem_counter}"]}))
         ((problem_counter+=1))
     else
         # Stop script; there were no further problems (of the kind we are looking for)
@@ -56,7 +50,7 @@ do
     
 done
 
-echo ${last_lines_in_problem_reads}
+echo ${last_lines_in_problem_reads[@]}
 # # We assume that we want to delete all 4 lines with the problem in the .fastq file.
 
 # # A loop can be used to get a running sum of the elements of 
