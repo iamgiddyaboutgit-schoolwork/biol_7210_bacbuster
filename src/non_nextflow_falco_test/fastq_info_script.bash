@@ -57,9 +57,9 @@ fi
 
 # Iteratively check for additional problems if there was a 
 # previous problem.
-while (( "${line_after_problem}" < "${num_lines_in_file}" ))
+while (( "${line_after_problem}" < (("${num_lines_in_file}" - 3)) ))
 do
-    last_lines_in_problem_reads[${problem_counter}]=$(tail -n +${line_after_problem} ${fastq_to_check} \
+    last_lines_in_problem_reads[${problem_counter}]=$(tail -n +${line_after_problem} ${fastq_to_check} 2>&1 > /dev/null \
         | fastq_info - 2>&1 > /dev/null \
         | grep -P --max-count=1 --only-matching "(?<=line\s)[0-9]+(?=:\s((duplicated\sseq)|(sequence\sand\squality)))" -)
     
@@ -129,7 +129,5 @@ done
 # https://stackoverflow.com/a/26727351/8423001
 # The first sed command replaces spaces and the first newline with "d;".
 # It is used to format the 2nd sed command which does the actual deleting.
-# echo ${all_lines_to_delete[@]} | sed "s/\ /d;/g;s/$/d;/" \
-#     | xargs -I z sed z ${fastq_to_check} > "${polished_fastq}"
-# test
-# echo ${all_lines_to_delete[@]} > /home/jpatterson87/big_project/Team3-WebServer/testing_data/sequencing_reads/all_lines_to_delete
+echo ${all_lines_to_delete[@]} | sed "s/\ /d;/g;s/$/d;/" \
+    | xargs -I % sed % ${fastq_to_check} > "${polished_fastq}"
