@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 fastq_to_check="../../testing_data/sequencing_reads/test_fastq_3.fq"
 num_lines_in_file=$(wc -l ${fastq_to_check} | cut -f 1 -d " ")
-num_reads_in_file=$((${num_lines_in_file} / 4))
+# num_reads_in_file=$((${num_lines_in_file} / 4))
 
 #####################################################################
 # Check for specific file format problems.
@@ -37,7 +37,6 @@ while (( "${line_after_problem}" < "${num_lines_in_file}" ))
 do
     echo "line_after_problem: ${line_after_problem}"
     echo "num_lines_in_file: ${num_lines_in_file}"
-    echo $(( "${line_after_problem}" < "${num_lines_in_file}" ))
     last_lines_in_problem_reads[${problem_counter}]=$(tail -n +${line_after_problem} ${fastq_to_check} \
         | fastq_info - 2>&1 > /dev/null \
         | grep -P --max-count=1 --only-matching "(?<=line\s)[0-9]+(?=:\s((duplicated\sseq)|(sequence\sand\squality)))" -)
@@ -47,7 +46,8 @@ do
     then 
         echo "We found another problem."
         # We found another problem.
-        line_after_problem=$((${last_lines_in_problem_reads[${problem_counter}]} + 1))
+        line_after_problem=$((${last_lines_in_problem_reads[((${problem_counter} - 1))]} + ${last_lines_in_problem_reads[${problem_counter}]} + 1))
+        echo ${line_after_problem}
         ((problem_counter+=1))
     else
         # Stop script; there were no further problems (of the kind we are looking for)
