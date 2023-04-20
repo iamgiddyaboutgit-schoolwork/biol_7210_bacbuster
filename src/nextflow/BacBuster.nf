@@ -47,14 +47,54 @@ process trim {
     '''
 }
 
-// process assemble {
-//     conda "Team3-WebServer_env.yml"
-// }
+process assemble {
+    conda "skesa.yml"
+    input:
+        tuple val(sample_id), path("${sample_id}.trimmed_1.fq.gz"), path("${sample_id}.trimmed_2.fq.gz")
+    output:
+        tuple val(sample_id), path("${sample_id}.trimmed.contigs.fq.gz")
+    shell:
+    '''
+    #!/usr/bin/env bash
+
+    # SKESA is designed for ILLUMINA reads only.
+    #
+    # min_count
+    # "All k-mers with count below the minimum count are ignored in the assembly."
+    # A higher value for min_count appears to make the bloom filter use
+    # more memory.  
+    #
+    # max_kmer
+    # The default value for max_kmer appears to be 0.
+    #
+    # max_kmer_count
+    # If max_kmer_count is not specified, then it appears to be estimated
+    # from a starting value of 10.
+    #
+    # vector_percent
+    # vector_percent appears to refer to the percentage of reads 
+    # containing a given 19-mer for the 19-mer to be considered a vector.
+    #
+    # Skesa actually attempts to do adapter trimming before assembly.
+    #
+    # "No explicit error correction of reads is done by SKESA
+    # as the heuristics of SKESA can handle the errors in a typical illumina read set."
+
+    skesa \
+        --cores 4 \
+        --memory 8 \
+        --reads !{sample_id}.trimmed_1.fq.gz,!{sample_id}.trimmed_2.fq.gz \
+        --contigs_out !{sample_id}.trimmed.contigs.fq.gz \
+        --steps 15 
+    '''
+}
 
 workflow {
     params.seq_reads = "/home/jpatterson87/big_project/Team3-WebServer/testing_data/sequencing_reads/*_{1,2}.fq.gz"
     // https://www.nextflow.io/docs/latest/channel.html#fromfilepairs
     // raw_reads = Channel.fromFilePairs(params.seq_reads, maxDepth=1, checkIfExists: true)
     raw_reads = Channel.fromFilePairs(params.seq_reads, maxDepth:1, checkIfExists:true)
-    trim(raw_reads) 
+    trim(raw_reads) \
+        | assemble 
+
 }
