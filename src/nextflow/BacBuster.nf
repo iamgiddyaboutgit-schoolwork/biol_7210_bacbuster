@@ -29,8 +29,8 @@ process trim {
     # prokaryotes perform important functional roles and are highly conserved:
     # https://doi.org/10.1093/nar/gkz730
 
-    # Filtering by average quality happens after all trimming according to:
-    # https://github.com/OpenGene/fastp/issues/159
+    # Order of filtering:
+    # https://github.com/OpenGene/fastp/
 
     fastp \
         --in1 !{fq[0]} \
@@ -39,11 +39,6 @@ process trim {
         --out2 !{sample_id}.trimmed_2.fq.gz \
         --detect_adapter_for_pe \
         --disable_trim_poly_g \
-        --cut_right \
-        --cut_window_size 4 \
-        --cut_mean_quality 25 \
-        --length_required 15 \
-        --qualified_quality_phred 17 \
         --unqualified_percent_limit 30 \
         --n_base_limit 20 \
         --thread 4
