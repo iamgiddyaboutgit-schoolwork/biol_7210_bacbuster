@@ -10,9 +10,9 @@ process trim {
         // https://www.nextflow.io/docs/latest/channel.html#fromfilepairs
         tuple val(sample_id), path("fq")
     output:
-        tuple path("${sample_id}.trimmed_1.fq.gz"), path("${sample_id}.trimmed_2.fq.gz")
+        tuple val(sample_id), path("${sample_id}.trimmed_1.fq.gz"), path("${sample_id}.trimmed_2.fq.gz")
     shell:
-    """
+    '''
     #!/usr/bin/env bash
  
     # More info. on Illumina adapter sequences
@@ -41,9 +41,15 @@ process trim {
         --disable_trim_poly_g \
         --unqualified_percent_limit 30 \
         --n_base_limit 20 \
+        --html "!{sample_id}.fastp.html" \
+        --report_title "!{sample_id} fastp Report" \
         --thread 4
-    """
+    '''
 }
+
+// process assemble {
+//     conda "Team3-WebServer_env.yml"
+// }
 
 workflow {
     params.seq_reads = "/home/jpatterson87/big_project/Team3-WebServer/testing_data/sequencing_reads/*_{1,2}.fq.gz"
