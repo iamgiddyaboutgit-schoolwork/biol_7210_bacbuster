@@ -35,4 +35,10 @@ sdk install java 17.0.6-amzn
 ```
 
 # Nextflow Notes
-Upon invocation within a directory, nextflow creates a project specific .nextflow.log file, .nextflow cache directory as well as a work directory.  The output of the pipeline will be stored in the work directory.  
+Upon invocation within a directory, nextflow creates a project specific .nextflow.log file, .nextflow cache directory as well as a work directory.  The output of the pipeline will be stored in the work directory. 
+
+# General, Uncategorized Notes
+The raw read files can be checked for corruption using the md5 check sums using the following command within the appropriate directory.
+```
+md5sum -c *.md5
+``` 
