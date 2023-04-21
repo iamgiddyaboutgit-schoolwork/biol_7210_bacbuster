@@ -16,7 +16,7 @@ with st.form("func"):
 
 
     #Add a radio button that allows the user to decide on how much of the pipeline should be run.
-    st.radio("Desired Output", ["1. Genome Assembly", "2. Gene Prediction", "3. Functional Annotation"])
+    stop = st.radio("Desired Output", ["1. Genome Assembly", "2. Gene Prediction", "3. Functional Annotation"])
     st.write("⚠️ NOTE: Selecting a later step will increase the runtime and size of the final results folder.")
 
     #Add a text input for email. TODO make this optional.
@@ -35,6 +35,8 @@ with st.form("func"):
 #RUN THE NEXTFLOW PIPELINE AND RETURN RESULTS USING SUBPROCESS.
 import subprocess
 
+#Generate the folder that nextflow will read from. Let the whole thing run for now, but later introduce break points based on choice.
+#subprocess("mkdir")
 
 #THESE WIDGETS SHOULD ONLY BE DRAWN AFTER SUBMIT IS PRESSED.
 #Find out how many pairs of files there are.
@@ -48,7 +50,7 @@ if submitted and pairCount == 0:
 #Assembly Step
 #subprocess(nextflow run )
 
-assemblyCheck = False #Flip this flag once Nextflow pipeliine is done.
+assemblyCheck = False #Flip this flag once Nextflow pipeliine is done AND results from this section are not empty.
 
 #Notify user that assembly is finished.
 if submitted and assemblyCheck:
