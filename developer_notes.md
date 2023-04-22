@@ -67,6 +67,9 @@ in viruses, such as translational frame shifts. Viruses should
 generally be analyzed as above, with short genomes analyzed in 
 anonymous mode and longer ones in normal mode."
 
+# Flask
+Flask uses the [Web Server Gateway Interface](https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface) calling convention to communicate between the web application and the web server.
+
 # General, Uncategorized Notes
 The raw read files can be checked for corruption using the md5 check sums using the following command within the appropriate directory.
 ```
