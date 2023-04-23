@@ -35,8 +35,11 @@ with st.form("func"):
 #RUN THE NEXTFLOW PIPELINE AND RETURN RESULTS USING SUBPROCESS.
 import subprocess
 
+files = subprocess.run("ls")
+st.write(files.stdout)
+
 #Generate the folder that nextflow will read from. Let the whole thing run for now, but later introduce break points based on choice.
-#subprocess("mkdir")
+#subprocess.run("mkdir")
 
 #THESE WIDGETS SHOULD ONLY BE DRAWN AFTER SUBMIT IS PRESSED.
 #Find out how many pairs of files there are.
