@@ -113,13 +113,46 @@ process predict_genes {
     """
 }
 
+process amr_finder_plus {
+    /*  More about AMRFinderPlus:
+        https://github.com/ncbi/amr
+    */
+    conda "Team3-WebServer_env.yml"
+    input:
+        tuple val(sample_id), path("${sample_id}.faa")
+
+    output:
+    /*  This will be outputted by an output channel as explained here:
+        https://www.nextflow.io/docs/latest/process.html#output-type-path
+        See also the tip under this section for the management of output files in nextflow:
+        https://www.nextflow.io/docs/latest/process.html#dynamic-output-file-names
+    */
+        path "${sample_id}.amr_finder_plus.tsv"
+
+    // https://www.nextflow.io/docs/edge/process.html#shell
+    shell:
+    '''
+    #!/bin/bash
+    # Note that the AMRFinderPlus database is installed next to the binary with the command
+    # amrfinder --update
+    # Make sure Nextflow knows to use the right db.
+    amrfinder \
+        --protein !{sample_id}.faa \
+        --database !{params.amr_finder_plus_db_path} \
+        --threads 4 \
+        > !{sample_id}.amr_finder_plus.tsv
+    '''
+}
+
 workflow {
     params.seq_reads = "/home/jpatterson87/big_project/Team3-WebServer/testing_data/sequencing_reads/*_{1,2}.fq.gz"
+    params.amr_finder_plus_db_path = "/home/team2/databases/AMRFinderPlus/"
     // https://www.nextflow.io/docs/latest/channel.html#fromfilepairs
     // raw_reads = Channel.fromFilePairs(params.seq_reads, maxDepth=1, checkIfExists: true)
     raw_reads = Channel.fromFilePairs(params.seq_reads, maxDepth:1, checkIfExists:true)
     trim(raw_reads) \
         | assemble \
-        | predict_genes
+        | predict_genes 
+        //| amr_finder_plus
 
 }
