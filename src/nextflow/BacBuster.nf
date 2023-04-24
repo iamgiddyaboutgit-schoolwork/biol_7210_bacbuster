@@ -4,7 +4,7 @@
 nextflow.enable.dsl=2
 
 process trim {
-    conda "/home/andy/compGen/Team3-WebServer/src/nextflow/Team3-WebServer_env.yml"
+    conda "Team3-WebServer_env.yml"
     // https://www.nextflow.io/docs/edge/process.html#input-type-file
     input:
         // https://www.nextflow.io/docs/latest/channel.html#fromfilepairs
@@ -48,7 +48,7 @@ process trim {
 }
 
 process assemble {
-    conda "/home/andy/compGen/Team3-WebServer/src/nextflow/skesa.yml"
+    conda "skesa.yml"
     input:
         tuple val(sample_id), path("${sample_id}.trimmed_1.fq.gz"), path("${sample_id}.trimmed_2.fq.gz")
     output:
@@ -90,13 +90,13 @@ process assemble {
 }
 
 process predict_genes {
-    conda "/home/andy/compGen/Team3-WebServer/src/nextflow/Team3-WebServer_env.yml"
+    conda "Team3-WebServer_env.yml"
     // https://www.nextflow.io/docs/edge/process.html#input-type-file
     input:
         // https://www.nextflow.io/docs/latest/channel.html#fromfilepairs
         tuple val(sample_id), path("draft_assembly")
     output:
-        tuple val(sample_id), path("${sample_id}.faa")
+        tuple val(sample_id), path("${sample_id}.faa"), emit: predicted_amino_acid_seqs
         tuple val(sample_id), path("${sample_id}.fna")
         tuple val(sample_id), path("${sample_id}.prodigal.out")
     shell:
@@ -113,15 +113,51 @@ process predict_genes {
     """
 }
 
+process amr_finder_plus {
+    /*  More about AMRFinderPlus:
+        https://github.com/ncbi/amr
+    */
+    conda "Team3-WebServer_env.yml"
+    input:
+        tuple val(sample_id), path("${sample_id}.faa")
+    output:
+    /*  This will be outputted by an output channel as explained here:
+        https://www.nextflow.io/docs/latest/process.html#output-type-path
+        See also the tip under this section for the management of output files in nextflow:
+        https://www.nextflow.io/docs/latest/process.html#dynamic-output-file-names
+    */
+        path "${sample_id}.amr_finder_plus.tsv"
+
+    // https://www.nextflow.io/docs/edge/process.html#shell
+    shell:
+    '''
+    #!/bin/bash
+    # Note that the AMRFinderPlus database is installed next to the binary with the command
+    # amrfinder --update
+    # If using a conda/mamba environment, then the db will be within the environment directory.
+    # Make sure Nextflow knows to use the right db.
+    amrfinder \
+        --protein !{sample_id}.faa \
+        --database !{params.amr_finder_plus_db_path} \
+        --threads 4 \
+        > !{sample_id}.amr_finder_plus.tsv
+    '''
+}
+
 workflow {
     //params.seq_reads = "/home/jpatterson87/big_project/Team3-WebServer/testing_data/sequencing_reads/*_{1,2}.fq.gz"
     //path = params.seq_reads
     //params.seq_reads = ""
+    //params.seq_reads = "/home/jpatterson87/big_project/Team3-WebServer/testing_data/sequencing_reads/*_{1,2}.fq.gz"
+    //params.amr_finder_plus_db_path = "/home/jpatterson87/bin/mambaforge/envs/Team3-WebServer_env/share/amrfinderplus/data/latest"
     // https://www.nextflow.io/docs/latest/channel.html#fromfilepairs
     // raw_reads = Channel.fromFilePairs(, maxDepth=1, checkIfExists: true)
     raw_reads = Channel.fromFilePairs(params.seq_reads, maxDepth:1, checkIfExists:true)
     trim(raw_reads) \
         | assemble \
-        | predict_genes
+        | predict_genes 
+    
+    predict_genes.out.predicted_amino_acid_seqs \
+        | amr_finder_plus
 
 }
