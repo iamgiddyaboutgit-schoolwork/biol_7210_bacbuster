@@ -116,7 +116,7 @@ process predict_genes {
 workflow {
     //params.seq_reads = "/home/jpatterson87/big_project/Team3-WebServer/testing_data/sequencing_reads/*_{1,2}.fq.gz"
     //path = params.seq_reads
-    params.seq_reads = ""
+    //params.seq_reads = ""
     // https://www.nextflow.io/docs/latest/channel.html#fromfilepairs
     // raw_reads = Channel.fromFilePairs(, maxDepth=1, checkIfExists: true)
     raw_reads = Channel.fromFilePairs(params.seq_reads, maxDepth:1, checkIfExists:true)
