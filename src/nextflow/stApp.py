@@ -15,8 +15,11 @@ st.text("This app simplifies analysis of raw paired reads from outbreak isolates
 with st.form("func"):
 
     #Give the user the ability to upload isolates
-    upload = st.file_uploader("Upload raw paired reads of the isolate(s).", accept_multiple_files=True)
+    upload = st.file_uploader("Upload raw paired reads of the isolate(s) as _fq.gz", accept_multiple_files=True)
 
+    #Store the isolates in a new directory: inDir that can be passed later.
+    for read in upload:
+        #TODO HERE
 
     #Add a radio button that allows the user to decide on how much of the pipeline should be run.
     #stop = st.radio("Desired Output", ["1. Genome Assembly", "2. Gene Prediction", "3. Functional Annotation"])
@@ -28,7 +31,7 @@ with st.form("func"):
     #Provide the user with additional parameters to influence the assembly/prediction/annotation steps?
 
 
-    #Submit button for the form. TODO disable on click? A mistaken submission would need to reopen the app then.
+    #Submit button for the form. TODO disable on click?
     submitted = st.form_submit_button()
     if submitted:
         st.write("Inputs provided. Please wait for results!\n Note that pressing the submit button again will reset the pipeline.")
@@ -40,7 +43,9 @@ with st.form("func"):
 #out = subprocess.run(["echo", "bonjour"], capture_output=True, text=True)
 #st.write(out.stdout)
 #files = subprocess.run(["nextflow", "run", "BacBuster.nf", "--seq_reads", "/home/andy/compGen/Team3-WebServer/testing_data/sequencing_reads"], capture_output=True, text=True)
+#TODO Implement user input.
 files = subprocess.run(["nextflow", "run", "BacBuster.nf", "--seq_reads" "testing_data/sequencing_reads"], capture_output=True, text=True)
+#files = subprocess.run(["nextflow", "run", "BacBuster.nf", "--seq_reads", inDir], capture_output=True, text=True)
 #files = subprocess.run([f"{sys.executable}", "src/nextflow/BacBuster.nf"])
 st.write(files.stdout)
 
@@ -91,14 +96,12 @@ if submitted and predictionCheck:
 
 #Provide download button for the results. TODO Hide this until the pipeline has finished running later.
 
-
-#if submitted:
-    #Generate zip file of results.
+#Generate zip file of results.
 subprocess.run(["rm", "-r", "work/conda"])
 subprocess.run(["zip", "-r", "temp.zip", "work"])
 st.success("Pipeline and packaging finished! Results below", icon="✅")
 
-    #Draw a button and pass the zip.
+#Draw a button and pass the zip.
 with open("temp.zip", "rb") as fp:
     db = st.download_button(label="Download zipped final results.", data = fp, file_name="results.zip", mime="application/zip")
 
