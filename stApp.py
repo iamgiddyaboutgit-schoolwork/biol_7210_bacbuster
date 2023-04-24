@@ -93,7 +93,7 @@ if submitted and predictionCheck:
 #Email results to input email using smtp. Wait until the app has been tested without.
 if submitted and len(email) > 0:
     #Send email
-    st.write("email provided")
+    st.write("Email provided!")
 
 
 #TODO: Add expander with more information on the workflow + flowchart.
