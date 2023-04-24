@@ -42,7 +42,7 @@ process trim {
         --unqualified_percent_limit 30 \
         --n_base_limit 20 \
         --html "!{sample_id}.fastp.html" \
-        --report_title "!{sample_id} fastp Report" \
+        --report_title "!{sample_id}_fastp_Report" \
         --thread 4
     '''
 }
@@ -145,11 +145,11 @@ process amr_finder_plus {
 }
 
 workflow {
-    params.seq_reads = "/home/jpatterson87/big_project/Team3-WebServer/testing_data/sequencing_reads/*_{1,2}.fq.gz"
+    params.seq_reads = "/home/team3/raw_data/Raw_FQs/*_{1,2}.fq.gz"
     params.amr_finder_plus_db_path = "/home/jpatterson87/bin/mambaforge/envs/Team3-WebServer_env/share/amrfinderplus/data/latest"
     // https://www.nextflow.io/docs/latest/channel.html#fromfilepairs
-    // raw_reads = Channel.fromFilePairs(params.seq_reads, maxDepth=1, checkIfExists: true)
     raw_reads = Channel.fromFilePairs(params.seq_reads, maxDepth:1, checkIfExists:true)
+
     trim(raw_reads) \
         | assemble \
         | predict_genes 
