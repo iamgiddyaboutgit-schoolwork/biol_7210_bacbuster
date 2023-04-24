@@ -6,16 +6,29 @@ dependencies:
   - _libgcc_mutex=0.1=conda_forge
   - _openmp_mutex=4.5=2_gnu
   - alsa-lib=1.2.8=h166bdaf_0
+  - blast=2.13.0=hf3cf87c_1
+  - blinker=1.6.2=pyhd8ed1ab_0
   - bzip2=1.0.8=h7f98852_4
   - c-ares=1.18.1=h7f98852_0
   - ca-certificates=2022.12.7=ha878542_0
   - cairo=1.16.0=ha61ee94_1014
   - cffi=1.15.1=py310h255011f_3
+  - click=8.1.3=unix_pyhd8ed1ab_2
   - coreutils=8.25=1
-  - curl=7.88.0=hdc1c0ab_0
+  - cryptography=40.0.2=py310h34c0648_0
+  - curl=7.88.1=hdc1c0ab_1
   - dnaio=0.10.0=py310h1425a21_0
+  - dnspython=2.3.0=pyhd8ed1ab_0
+  - dominate=2.7.0=pyhd8ed1ab_0
+  - email-validator=1.3.1=pyhd8ed1ab_0
+  - email_validator=1.3.1=hd8ed1ab_0
+  - entrez-direct=16.2=he881be0_1
   - expat=2.5.0=h27087fc_0
   - fastp=0.23.2=h5f740d0_3
+  - flask=2.2.3=pyhd8ed1ab_0
+  - flask-bootstrap=3.3.7.1=py_0
+  - flask-mail=0.9.1=py_2
+  - flask-wtf=1.1.1=pyhd8ed1ab_0
   - font-ttf-dejavu-sans-mono=2.37=hab24e00_0
   - font-ttf-inconsolata=3.000=h77eed37_0
   - font-ttf-source-code-pro=2.038=h77eed37_0
@@ -29,8 +42,13 @@ dependencies:
   - git=2.39.2=pl5321h693f4a3_0
   - graphite2=1.3.13=h58526e2_1001
   - harfbuzz=6.0.0=h8e241bc_0
+  - hmmer=3.3.2=h87f3376_2
   - icu=70.1=h27087fc_0
+  - idna=3.4=pyhd8ed1ab_0
+  - importlib-metadata=6.5.1=pyha770c72_0
   - isa-l=2.30.0=ha770c72_4
+  - itsdangerous=2.1.2=pyhd8ed1ab_0
+  - jinja2=3.1.2=pyhd8ed1ab_1
   - jpeg=9e=h0b41bf4_3
   - keyutils=1.6.1=h166bdaf_0
   - krb5=1.20.1=h81ceb04_0
@@ -38,7 +56,7 @@ dependencies:
   - ld_impl_linux-64=2.40=h41732ed_0
   - lerc=4.0.0=h27087fc_0
   - libcups=2.3.3=h36d4200_3
-  - libcurl=7.88.0=hdc1c0ab_0
+  - libcurl=7.88.1=hdc1c0ab_1
   - libdeflate=1.13=h166bdaf_0
   - libedit=3.1.20191231=he28a2e2_2
   - libev=4.33=h516909a_1
@@ -48,24 +66,49 @@ dependencies:
   - libglib=2.74.1=h606061b_1
   - libgomp=12.2.0=h65d4601_19
   - libiconv=1.17=h166bdaf_0
-  - libnghttp2=1.51.0=hff17c54_0
+  - libidn2=2.3.4=h166bdaf_0
+  - libnghttp2=1.52.0=h61bc06f_0
   - libnsl=2.0.0=h7f98852_0
   - libpng=1.6.39=h753d276_0
   - libsqlite=3.40.0=h753d276_0
   - libssh2=1.10.0=hf14f497_3
   - libstdcxx-ng=12.2.0=h46fd767_19
   - libtiff=4.4.0=h0e0dad5_3
+  - libunistring=0.9.10=h7f98852_0
   - libuuid=2.32.1=h7f98852_1000
   - libwebp-base=1.2.4=h166bdaf_0
   - libxcb=1.13=h7f98852_1004
   - libzlib=1.2.13=h166bdaf_4
+  - markupsafe=2.1.2=py310h1fa729e_0
+  - ncbi-amrfinderplus=3.11.11=h6e70893_0
   - ncurses=6.3=h27087fc_1
   - nextflow=22.10.6=h4a94de4_0
   - openjdk=17.0.3=h58dac75_5
-  - openssl=3.1.0=h0b41bf4_0
+  - openssl=3.1.0=hd590300_1
   - pbzip2=1.1.13=0
+  - pcre=8.45=h9c3ff4c_0
   - pcre2=10.40=hc3806b6_0
   - perl=5.32.1=2_h7f98852_perl5
+  - perl-archive-tar=2.40=pl5321hdfd78af_0
+  - perl-carp=1.50=pl5321hd8ed1ab_0
+  - perl-common-sense=3.75=pl5321hd8ed1ab_0
+  - perl-compress-raw-bzip2=2.201=pl5321h166bdaf_0
+  - perl-compress-raw-zlib=2.202=pl5321h166bdaf_0
+  - perl-encode=3.19=pl5321h166bdaf_0
+  - perl-exporter=5.74=pl5321hd8ed1ab_0
+  - perl-exporter-tiny=1.002002=pl5321hd8ed1ab_0
+  - perl-extutils-makemaker=7.70=pl5321hd8ed1ab_0
+  - perl-io-compress=2.201=pl5321h87f3376_0
+  - perl-io-zlib=1.14=pl5321hdfd78af_0
+  - perl-json=4.10=pl5321hdfd78af_0
+  - perl-json-xs=2.34=pl5321h9f5acd7_5
+  - perl-list-moreutils=0.430=pl5321hdfd78af_0
+  - perl-list-moreutils-xs=0.430=pl5321hec16e2b_1
+  - perl-parent=0.241=pl5321hd8ed1ab_0
+  - perl-pathtools=3.75=pl5321h166bdaf_0
+  - perl-scalar-list-utils=1.63=pl5321h166bdaf_0
+  - perl-storable=3.15=pl5321h166bdaf_0
+  - perl-types-serialiser=1.01=pl5321hdfd78af_0
   - pigz=2.6=h27826a3_0
   - pip=23.1=pyhd8ed1ab_0
   - pixman=0.40.0=h36c2ea0_0
@@ -81,7 +124,11 @@ dependencies:
   - tk=8.6.12=h27826a3_0
   - trimmomatic=0.39=hdfd78af_2
   - tzdata=2023c=h71feb2d_0
+  - visitor=0.1.3=pyh9f0ad1d_1
+  - werkzeug=2.2.3=pyhd8ed1ab_0
+  - wget=1.20.3=ha35d2d1_1
   - wheel=0.40.0=pyhd8ed1ab_0
+  - wtforms=3.0.1=pyhd8ed1ab_0
   - xopen=1.7.0=py310hff52083_1
   - xorg-fixesproto=5.0=h7f98852_1002
   - xorg-inputproto=2.3.2=h7f98852_1002
@@ -101,6 +148,9 @@ dependencies:
   - xorg-xextproto=7.3.0=h0b41bf4_1003
   - xorg-xproto=7.0.31=h7f98852_1007
   - xz=5.2.6=h166bdaf_0
+  - zipp=3.15.0=pyhd8ed1ab_0
   - zlib=1.2.13=h166bdaf_4
   - zstandard=0.19.0=py310hdeb6495_1
   - zstd=1.5.2=h3eb15da_6
+  - pip:
+    - flask-sslify==0.1.5
