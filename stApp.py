@@ -1,5 +1,7 @@
 import streamlit as st
 import math
+#import sys
+import subprocess
 
 #Provide a large title in bold.
 st.title(":boom: BacBuster Isolate Analyzer :boom:")
@@ -11,7 +13,7 @@ st.text("This app simplifies analysis of raw paired reads from outbreak isolates
 #Create form so that uploads and email are all processed together.
 with st.form("func"):
 
-    #Give the user the ability to upload isolates TODO Increase file size limit and theming.
+    #Give the user the ability to upload isolates
     upload = st.file_uploader("Upload raw paired reads of the isolate(s).", accept_multiple_files=True)
 
 
@@ -33,9 +35,13 @@ with st.form("func"):
 
 
 #RUN THE NEXTFLOW PIPELINE AND RETURN RESULTS USING SUBPROCESS.
-import subprocess
+#import subprocess
 
-files = subprocess.run("ls")
+#subprocess.call: returns status instead of a stdout.
+#subprocess.check_output: captures the stdout and returns it as a bytestring. Provide encoding as an argument.
+
+files = subprocess.run(["nextflow run", "src/nextflow/BacBuster.nf"])
+#files = subprocess.run([f"{sys.executable}", "src/nextflow/BacBuster.nf"])
 st.write(files.stdout)
 
 #Generate the folder that nextflow will read from. Let the whole thing run for now, but later introduce break points based on choice.
@@ -59,19 +65,27 @@ assemblyCheck = False #Flip this flag once Nextflow pipeliine is done AND result
 if submitted and assemblyCheck:
     st.success(' Assembly completed!', icon="✅")
 
+#Show any results that can be visualized from this step.
+
 #Prediction Step
 
 
 #Notify user that prediction is finished.
 
+#Show any results that can be visualized from this step.
+
 predictionCheck = False #Flip this flag once Nextflow pipeliine is done.
 if submitted and predictionCheck:
-    st.success(' Prediction completed! If Functional Annotation was selected, hold tight! Results incoming.', icon="✅")
+    st.success(' Prediction completed! If Functional Annotation was selected, hold tight! Downloadableesults incoming.', icon="✅")
 #Prediction step completed 2/3, hold tight!
 
 #Annotation Step
 
 #Write to results screen. Before completion, have some sort of progress printed to user.
+
+
+#Show any results that can be visualized from this step.
+
 #st.write() handles many data inputs, such as images.
 
 
