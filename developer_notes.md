@@ -67,6 +67,9 @@ in viruses, such as translational frame shifts. Viruses should
 generally be analyzed as above, with short genomes analyzed in 
 anonymous mode and longer ones in normal mode."
 
+# AMRFinderPlus Notes
+After installing into an environment, the database can be updated using ```amrfinder --update```.  The database will be installed to the same directory as your environment.
+
 # General, Uncategorized Notes
 The raw read files can be checked for corruption using the md5 check sums using the following command within the appropriate directory.
 ```
