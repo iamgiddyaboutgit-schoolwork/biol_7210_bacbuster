@@ -9,6 +9,7 @@ st.title(":boom: BacBuster Isolate Analyzer :boom:")
 #Provide some info on how the app works and the authors.
 st.text("This app simplifies analysis of raw paired reads from outbreak isolates.\nUsers can process the samples up to the AMR annotation, but can stop before.")
 
+#st.footer("BacBuster was developed for BIOL 7210, Computational Genomics, at Georgia Tech.")
 
 #Create form so that uploads and email are all processed together.
 with st.form("func"):
@@ -18,8 +19,8 @@ with st.form("func"):
 
 
     #Add a radio button that allows the user to decide on how much of the pipeline should be run.
-    stop = st.radio("Desired Output", ["1. Genome Assembly", "2. Gene Prediction", "3. Functional Annotation"])
-    st.write("⚠️ NOTE: Selecting a later step will increase the runtime and size of the final results folder.")
+    #stop = st.radio("Desired Output", ["1. Genome Assembly", "2. Gene Prediction", "3. Functional Annotation"])
+    #st.write("⚠️ NOTE: Selecting a later step will increase the runtime and size of the final results folder.")
 
     #Add a text input for email. TODO make this optional.
     email = st.text_input("Provide email if you would like to receive results later.", placeholder="kingjordan@gmail.com")
@@ -89,7 +90,17 @@ if submitted and predictionCheck:
 
 
 #Provide download button for the results. TODO Hide this until the pipeline has finished running later.
-#db = st.download_button("Download zipped final results.", f, file_name="results.zip")
+
+
+#if submitted:
+    #Generate zip file of results.
+subprocess.run(["rm", "-r", "work/conda"])
+subprocess.run(["zip", "-r", "temp.zip", "work"])
+st.success("Pipeline and packaging finished! Results below", icon="✅")
+
+    #Draw a button and pass the zip.
+with open("temp.zip", "rb") as fp:
+    db = st.download_button(label="Download zipped final results.", data = fp, file_name="results.zip", mime="application/zip")
 
 #Email results to input email using smtp. Wait until the app has been tested without.
 if submitted and len(email) > 0:
