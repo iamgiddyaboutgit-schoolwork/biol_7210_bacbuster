@@ -37,8 +37,6 @@ with st.form("func"):
 #RUN THE NEXTFLOW PIPELINE AND RETURN RESULTS USING SUBPROCESS.
 #import subprocess
 
-#subprocess.call: returns status instead of a stdout.
-#subprocess.check_output: captures the stdout and returns it as a bytestring. Provide encoding as an argument.
 
 files = subprocess.run(["nextflow run", "src/nextflow/BacBuster.nf"])
 #files = subprocess.run([f"{sys.executable}", "src/nextflow/BacBuster.nf"])
@@ -96,3 +94,9 @@ if submitted and predictionCheck:
 if submitted and len(email) > 0:
     #Send email
     st.write("email provided")
+
+
+#TODO: Add expander with more information on the workflow + flowchart.
+#Another TODO: Use session states over a check for submitted for showing the results.
+
+st.text("BacBuster was developed during completion of BIOL 7210, Computational Genomics, at Georgia Tech.")
