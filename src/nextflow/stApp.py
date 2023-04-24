@@ -75,7 +75,7 @@ if submitted and assemblyCheck:
 
 predictionCheck = False #Flip this flag once Nextflow pipeliine is done.
 if submitted and predictionCheck:
-    st.success(' Prediction completed! If Functional Annotation was selected, hold tight! Downloadableesults incoming.', icon="✅")
+    st.success(' Prediction completed! If Functional Annotation was selected, hold tight! Downloadable results incoming.', icon="✅")
 #Prediction step completed 2/3, hold tight!
 
 #Annotation Step
