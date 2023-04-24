@@ -37,8 +37,10 @@ with st.form("func"):
 #RUN THE NEXTFLOW PIPELINE AND RETURN RESULTS USING SUBPROCESS.
 #import subprocess
 
-
-files = subprocess.run(["nextflow run", "src/nextflow/BacBuster.nf"])
+#out = subprocess.run(["echo", "hello"], capture_output=True, text=True)
+#st.write(out.stdout)
+files = subprocess.run(["nextflow", "run", "src/nextflow/BacBuster.nf", "--seq_reads", "/home/andy/compGen/Team3-WebServer/testing_data/sequencing_reads"], capture_output=True, text=True)
+#files = subprocess.run(["nextflow", "run", "src/nextflow/BacBuster.nf", "--seq_reads" "testing_data/sequencing_reads"], capture_output=True, text=True)
 #files = subprocess.run([f"{sys.executable}", "src/nextflow/BacBuster.nf"])
 st.write(files.stdout)
 
@@ -99,4 +101,4 @@ if submitted and len(email) > 0:
 #TODO: Add expander with more information on the workflow + flowchart.
 #Another TODO: Use session states over a check for submitted for showing the results.
 
-st.text("BacBuster was developed during completion of BIOL 7210, Computational Genomics, at Georgia Tech.")
+st.text("BacBuster was developed for BIOL 7210, Computational Genomics, at Georgia Tech.")

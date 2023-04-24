@@ -4,7 +4,7 @@
 nextflow.enable.dsl=2
 
 process trim {
-    conda "Team3-WebServer_env.yml"
+    conda "/home/andy/compGen/Team3-WebServer/src/nextflow/Team3-WebServer_env.yml"
     // https://www.nextflow.io/docs/edge/process.html#input-type-file
     input:
         // https://www.nextflow.io/docs/latest/channel.html#fromfilepairs
@@ -48,7 +48,7 @@ process trim {
 }
 
 process assemble {
-    conda "skesa.yml"
+    conda "/home/andy/compGen/Team3-WebServer/src/nextflow/skesa.yml"
     input:
         tuple val(sample_id), path("${sample_id}.trimmed_1.fq.gz"), path("${sample_id}.trimmed_2.fq.gz")
     output:
@@ -90,7 +90,7 @@ process assemble {
 }
 
 process predict_genes {
-    conda "Team3-WebServer_env.yml"
+    conda "/home/andy/compGen/Team3-WebServer/src/nextflow/Team3-WebServer_env.yml"
     // https://www.nextflow.io/docs/edge/process.html#input-type-file
     input:
         // https://www.nextflow.io/docs/latest/channel.html#fromfilepairs
@@ -114,9 +114,11 @@ process predict_genes {
 }
 
 workflow {
-    params.seq_reads = "/home/jpatterson87/big_project/Team3-WebServer/testing_data/sequencing_reads/*_{1,2}.fq.gz"
+    //params.seq_reads = "/home/jpatterson87/big_project/Team3-WebServer/testing_data/sequencing_reads/*_{1,2}.fq.gz"
+    //path = params.seq_reads
+    params.seq_reads = ""
     // https://www.nextflow.io/docs/latest/channel.html#fromfilepairs
-    // raw_reads = Channel.fromFilePairs(params.seq_reads, maxDepth=1, checkIfExists: true)
+    // raw_reads = Channel.fromFilePairs(, maxDepth=1, checkIfExists: true)
     raw_reads = Channel.fromFilePairs(params.seq_reads, maxDepth:1, checkIfExists:true)
     trim(raw_reads) \
         | assemble \
