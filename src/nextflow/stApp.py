@@ -10,11 +10,12 @@ st.title(":boom: BacBuster Isolate Analyzer :boom:")
 #Provide some info on how the app works and the authors.
 st.text("This app simplifies analysis of raw paired reads from outbreak isolates.\nUsers can process the samples up to the AMR annotation.")
 
+
 #Create form so that uploads and email are all processed together.
 with st.form("func"):
 
     #Give the user the ability to upload isolates
-    upload = st.file_uploader("Upload raw paired reads of the isolate(s) as _fq.gz files.", accept_multiple_files=True)
+    upload = st.file_uploader("Upload raw paired reads of the isolate(s) as _fq files.", accept_multiple_files=True)
 
     #Add a radio button that allows the user to decide on how much of the pipeline should be run.
     #stop = st.radio("Desired Output", ["1. Genome Assembly", "2. Gene Prediction", "3. Functional Annotation"])
@@ -103,6 +104,9 @@ if submitted: #All the steps that occur once the user input has been verified.
         st.write("Email provided!")
 
     #Add a bunch of imports for the email package.
+
+#Clean any info from previous runs of the app.
+#subprocess.run(["bash", "clean.bash"])
 
 
 #TODO: Add expander with more information on the workflow + flowchart.
