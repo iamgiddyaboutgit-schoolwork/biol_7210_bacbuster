@@ -8,7 +8,7 @@ import subprocess
 st.title(":boom: BacBuster Isolate Analyzer :boom:")
 
 #Provide some info on how the app works and the authors.
-st.text("This app simplifies analysis of raw paired reads from outbreak isolates.\nUsers can process the samples up to the AMR annotation, but can stop before.")
+st.text("This app simplifies analysis of raw paired reads from outbreak isolates.\nUsers can process the samples up to the AMR annotation.")
 
 #Create form so that uploads and email are all processed together.
 with st.form("func"):
@@ -58,7 +58,7 @@ if submitted and len(upload) % 2 == 1:
 #TODO Implement user input.
 if submitted: #All the steps that occur once the user input has been verified.
     files = subprocess.run(["nextflow", "run", "BacBuster.nf", "--seq_reads" "testing_data/sequencing_reads"], capture_output=True, text=True)
-    #files = subprocess.run(["nextflow", "run", "BacBuster.nf", "--seq_reads", inDir], capture_output=True, text=True)
+    #files = subprocess.run(["nextflow", "run", "BacBuster.nf", "--seq_reads", "inDir"], capture_output=True, text=True)
 #files = subprocess.run([f"{sys.executable}", "src/nextflow/BacBuster.nf"])
     st.write(files.stdout)
 
@@ -86,8 +86,9 @@ if submitted: #All the steps that occur once the user input has been verified.
 #Provide download button for the results. TODO Hide this until the pipeline has finished running later.
 
 #Generate zip file of results.
-    subprocess.run(["rm", "-r", "work/conda"])
-    subprocess.run(["zip", "-r", "temp.zip", "work"])
+    #subprocess.run(["rm", "-r", "work/conda"])
+    #subprocess.run(["zip", "-r", "temp.zip", "work"])
+    subprocess.run(["zip", "-r", "temp.zip", "output"])
     st.success("Pipeline and packaging finished! Results below", icon="✅")
 
 #Draw a button and pass the zip.
@@ -98,6 +99,8 @@ if submitted: #All the steps that occur once the user input has been verified.
     if len(email) > 0:
         #Send email
         st.write("Email provided!")
+
+    #Add a bunch of imports for the email package.
 
 
 #TODO: Add expander with more information on the workflow + flowchart.

@@ -11,7 +11,7 @@ process trim {
         tuple val(sample_id), path("fq")
     output:
         tuple val(sample_id), path("${sample_id}.trimmed_1.fq.gz"), path("${sample_id}.trimmed_2.fq.gz")
-    publishDir './output/trim'
+    publishDir 'output/trim'
     shell:
     '''
     #!/usr/bin/env bash
@@ -54,7 +54,7 @@ process assemble {
         tuple val(sample_id), path("${sample_id}.trimmed_1.fq.gz"), path("${sample_id}.trimmed_2.fq.gz")
     output:
         tuple val(sample_id), path("${sample_id}.trimmed.contigs.fq.gz")
-    publishDir './output/assemble'
+    publishDir 'output/assemble'
     shell:
     '''
     #!/usr/bin/env bash
@@ -101,7 +101,7 @@ process predict_genes {
         tuple val(sample_id), path("${sample_id}.faa"), emit: predicted_amino_acid_seqs
         tuple val(sample_id), path("${sample_id}.fna")
         tuple val(sample_id), path("${sample_id}.prodigal.out")
-    publishDir './output/predict_genes'
+    publishDir 'output/predict_genes'
     shell:
     """
     #!/usr/bin/env bash
@@ -132,7 +132,7 @@ process amr_finder_plus {
         path "${sample_id}.amr_finder_plus.tsv"
 
     // https://www.nextflow.io/docs/edge/process.html#shell
-    publishDir './output/amr_finder_plus'
+    publishDir 'output/amr_finder_plus'
     shell:
     '''
     #!/bin/bash
