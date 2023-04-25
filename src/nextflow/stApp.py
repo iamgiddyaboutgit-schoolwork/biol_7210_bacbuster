@@ -16,12 +16,6 @@ with st.form("func"):
     #Give the user the ability to upload isolates
     upload = st.file_uploader("Upload raw paired reads of the isolate(s) as _fq.gz", accept_multiple_files=True)
 
-    #Store the isolates in a new directory: inDir that can be passed later.
-    #if len(inDir)
-    #    for read in upload:
-    #        with open(read.name, "wb") as f:
-    #            f.write()
-
     #Add a radio button that allows the user to decide on how much of the pipeline should be run.
     #stop = st.radio("Desired Output", ["1. Genome Assembly", "2. Gene Prediction", "3. Functional Annotation"])
     #st.write("⚠️ NOTE: Selecting a later step will increase the runtime and size of the final results folder.")
@@ -51,6 +45,14 @@ if submitted and pairCount == 0:
 if submitted and len(upload) % 2 == 1:
     st.error("Odd number of files detected, please confirm that each isolate is submitted as a pair. Then press Submit again.", icon="🚨")
     submitted = False
+
+#Store the isolates in a new directory: inDir that can be passed as a path to Nextflow later.
+subprocess.run(["mkdir", "inDir"])
+for read in upload:
+    with open(os.path.join("inDir", read.name), "wb") as f:
+        f.write(read.getbuffer())
+
+
 
 #RUN THE NEXTFLOW PIPELINE AND RETURN RESULTS USING SUBPROCESS.
 
