@@ -11,6 +11,7 @@ process trim {
         tuple val(sample_id), path("fq")
     output:
         tuple val(sample_id), path("${sample_id}.trimmed_1.fq.gz"), path("${sample_id}.trimmed_2.fq.gz")
+    publishDir './output/trim'
     shell:
     '''
     #!/usr/bin/env bash
@@ -42,7 +43,7 @@ process trim {
         --unqualified_percent_limit 30 \
         --n_base_limit 20 \
         --html "!{sample_id}.fastp.html" \
-        --report_title "!{sample_id}_fastp_Report" \
+        --report_title "!{sample_id} fastp Report" \
         --thread 4
     '''
 }
@@ -53,6 +54,7 @@ process assemble {
         tuple val(sample_id), path("${sample_id}.trimmed_1.fq.gz"), path("${sample_id}.trimmed_2.fq.gz")
     output:
         tuple val(sample_id), path("${sample_id}.trimmed.contigs.fq.gz")
+    publishDir './output/assemble'
     shell:
     '''
     #!/usr/bin/env bash
@@ -99,6 +101,7 @@ process predict_genes {
         tuple val(sample_id), path("${sample_id}.faa"), emit: predicted_amino_acid_seqs
         tuple val(sample_id), path("${sample_id}.fna")
         tuple val(sample_id), path("${sample_id}.prodigal.out")
+    publishDir './output/predict_genes'
     shell:
     """
     #!/usr/bin/env bash
@@ -129,6 +132,7 @@ process amr_finder_plus {
         path "${sample_id}.amr_finder_plus.tsv"
 
     // https://www.nextflow.io/docs/edge/process.html#shell
+    publishDir './output/amr_finder_plus'
     shell:
     '''
     #!/bin/bash
@@ -145,16 +149,15 @@ process amr_finder_plus {
 }
 
 workflow {
-    params.seq_reads = "/home/team3/raw_data/Raw_FQs/*_{1,2}.fq.gz"
+    params.seq_reads = "/home/jpatterson87/big_project/Team3-WebServer/testing_data/sequencing_reads/*_{1,2}.fq.gz"
     params.amr_finder_plus_db_path = "/home/jpatterson87/bin/mambaforge/envs/Team3-WebServer_env/share/amrfinderplus/data/latest"
     // https://www.nextflow.io/docs/latest/channel.html#fromfilepairs
+    // raw_reads = Channel.fromFilePairs(params.seq_reads, maxDepth=1, checkIfExists: true)
     raw_reads = Channel.fromFilePairs(params.seq_reads, maxDepth:1, checkIfExists:true)
-
     trim(raw_reads) \
         | assemble \
         | predict_genes 
     
     predict_genes.out.predicted_amino_acid_seqs \
         | amr_finder_plus
-
 }
