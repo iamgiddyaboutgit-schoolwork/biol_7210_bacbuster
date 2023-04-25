@@ -2,7 +2,13 @@
 # Increase file size limit
 [server]
 maxUploadSize = 1000
+port = 5000 #Default is 8501
+headless = true
 
+#Change port and set address
+[browser]
+serverAddress = "team3.bioapp721023.biosci.gatech.edu"
+serverPort = 5000
 
 # Set theme
 [theme]
