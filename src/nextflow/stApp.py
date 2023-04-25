@@ -14,7 +14,7 @@ st.text("This app simplifies analysis of raw paired reads from outbreak isolates
 with st.form("func"):
 
     #Give the user the ability to upload isolates
-    upload = st.file_uploader("Upload raw paired reads of the isolate(s) as _fq.gz", accept_multiple_files=True)
+    upload = st.file_uploader("Upload raw paired reads of the isolate(s) as _fq.gz files.", accept_multiple_files=True)
 
     #Add a radio button that allows the user to decide on how much of the pipeline should be run.
     #stop = st.radio("Desired Output", ["1. Genome Assembly", "2. Gene Prediction", "3. Functional Annotation"])
@@ -59,8 +59,8 @@ for read in upload:
 #files = subprocess.run(["nextflow", "run", "BacBuster.nf", "--seq_reads", "/home/andy/compGen/Team3-WebServer/testing_data/sequencing_reads"], capture_output=True, text=True)
 #TODO Implement user input.
 if submitted: #All the steps that occur once the user input has been verified.
-    files = subprocess.run(["nextflow", "run", "BacBuster.nf", "--seq_reads" "testing_data/sequencing_reads"], capture_output=True, text=True)
-    #files = subprocess.run(["nextflow", "run", "BacBuster.nf", "--seq_reads", "inDir"], capture_output=True, text=True)
+    #files = subprocess.run(["nextflow", "run", "BacBuster.nf", "--seq_reads" "testing_data/sequencing_reads"], capture_output=True, text=True)
+    files = subprocess.run(["nextflow", "run", "BacBuster.nf", "--seq_reads", "inDir/*_{1,2}.fq.gz"], capture_output=True, text=True)
 #files = subprocess.run([f"{sys.executable}", "src/nextflow/BacBuster.nf"])
     st.write(files.stdout)
 

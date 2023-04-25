@@ -153,6 +153,7 @@ workflow {
     //path = params.seq_reads
     //params.seq_reads = ""
     params.seq_reads = "/home/andy/compGen/Team3-WebServer/testing_data/sequencing_reads/*_{1,2}.fq.gz"
+    //params.seq_reads = "home/andy/compGen/Team3-WebServer/src/nextflow/inDir/*_{1,2}.fq.gz"
     params.amr_finder_plus_db_path = "/home/andy/Downloads/ENTER/envs/Team3-WebServer_env/share/amrfinderplus/data/2023-04-17.1"
     // https://www.nextflow.io/docs/latest/channel.html#fromfilepairs
     // raw_reads = Channel.fromFilePairs(, maxDepth=1, checkIfExists: true)
